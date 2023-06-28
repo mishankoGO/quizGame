@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mishankoGO/quizGame/conf"
+	"github.com/mishankoGO/quizGame/internal/game"
 	"github.com/mishankoGO/quizGame/internal/reader/csvreader"
 	"log"
 )
@@ -12,16 +14,19 @@ var (
 )
 
 func main() {
+	// init config
 	err := conf.InitFlags(&config)
 	if err != nil {
 		log.Println(err)
 	}
 
+	// init reader
 	r := csvreader.NewCSVReader(config)
 	defer r.Close()
-	record, err := r.ReadLine()
+
+	correctCnt, totalCnt, err := game.Game(r)
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(record)
+	fmt.Printf("Your result: %d/%d", correctCnt, totalCnt)
 }
