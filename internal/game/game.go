@@ -1,12 +1,13 @@
 package game
 
 import (
+	"context"
 	"fmt"
 	"github.com/mishankoGO/quizGame/internal/reader"
 	"log"
 )
 
-func Game(reader reader.Reader) (int, int, error) {
+func Game(ctx context.Context, reader reader.Reader) (int, int, error) {
 	var correctCnt, totalCnt int
 
 	for {
@@ -15,26 +16,33 @@ func Game(reader reader.Reader) (int, int, error) {
 			log.Println("error reading line: %v", err)
 			return correctCnt, totalCnt, err
 		}
+		question, answer := record[0], record[1]
+		fmt.Print(question + " ")
 
-		if len(record) != 0 {
-			question, answer := record[0], record[1]
+		ansCh := make(chan string)
 
-			var response string
-			fmt.Print(question + " ")
-			_, err = fmt.Scanf("%s", &response)
-			if err != nil {
-				log.Println("error reading response")
-				return correctCnt, totalCnt, err
-			}
+		go waitForAnswer(ansCh)
 
-			if checkAnswer(response, answer) {
+		select {
+		case <-ctx.Done():
+			fmt.Println()
+			return correctCnt, totalCnt, nil
+		case resp := <-ansCh:
+			if checkAnswer(resp, answer) {
 				correctCnt++
 			}
 			totalCnt++
-		} else {
-			return correctCnt, totalCnt, nil
 		}
 	}
+}
+
+func waitForAnswer(ansCh chan string) {
+	var response string
+	_, err := fmt.Scanf("%s\n", &response)
+	if err != nil {
+		log.Println("error reading response")
+	}
+	ansCh <- response
 }
 
 func checkAnswer(response string, answer string) bool {

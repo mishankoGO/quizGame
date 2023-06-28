@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"github.com/mishankoGO/quizGame/conf"
 	"github.com/mishankoGO/quizGame/internal/game"
 	"github.com/mishankoGO/quizGame/internal/reader/csvreader"
@@ -24,9 +24,14 @@ func main() {
 	r := csvreader.NewCSVReader(config)
 	defer r.Close()
 
-	correctCnt, totalCnt, err := game.Game(r)
+	// create context
+	ctx, cancel := context.WithTimeout(context.Background(), config.Limit)
+	defer cancel()
+
+	correctCnt, totalCnt, err := game.Game(ctx, r)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Printf("Your result: %d/%d", correctCnt, totalCnt)
+
+	log.Printf("Time is up. Your result is: %d/%d", correctCnt, totalCnt)
 }
