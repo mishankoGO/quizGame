@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/mishankoGO/quizGame/conf"
+	"github.com/mishankoGO/quizGame/internal/reader/csvreader"
 	"log"
-	"quizGame/conf"
-	"quizGame/internal/reader/csvreader"
 )
 
 // variables to init

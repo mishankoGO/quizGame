@@ -2,10 +2,10 @@ package csvreader
 
 import (
 	"encoding/csv"
+	"github.com/mishankoGO/quizGame/conf"
+	"github.com/mishankoGO/quizGame/internal/reader"
 	"log"
 	"os"
-	"quizGame/conf"
-	"quizGame/internal/reader"
 )
 
 type CSVReader struct {
